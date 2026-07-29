@@ -40,7 +40,7 @@ export default function App() {
   const [favorite, setFavorite] = useState(true);
   const workspaceRef = useRef<HTMLElement>(null);
   const instrument = instrumentBySymbol(symbol);
-  const { candles, quote, feedStatus, lastUpdated, feedMessage } = useMarketFeed(instrument, timeframe, live);
+  const { candles, quote } = useMarketFeed(instrument, timeframe, live);
 
   const notify = useCallback((message: string, tone: Toast["tone"] = "neutral") => {
     const id = crypto.randomUUID();
@@ -152,9 +152,7 @@ export default function App() {
               <span>L <b>{current ? formatPrice(current.low, instrument.precision) : "—"}</b></span>
               <span>C <b>{current ? formatPrice(current.close, instrument.precision) : "—"}</b></span>
               <span>Vol <b>{current ? formatCompact(current.volume) : "—"}</b></span>
-              <span className={feedStatus === "market" ? "positive" : feedStatus === "demo" ? "negative" : ""}>
-                ● {feedStatus === "market" ? "market data" : feedStatus === "demo" ? "demo fallback" : feedStatus}
-              </span>
+              <span className={current && previous && current.close >= previous.close ? "positive" : "negative"}>● {live ? "streaming demo" : "paused"}</span>
             </div>
             <div>
               <button className={grid ? "is-active" : ""} onClick={() => setGrid(!grid)} title="Toggle grid"><Grid3X3 size={15} /></button>
@@ -196,11 +194,11 @@ export default function App() {
       </section>
 
       <footer className="statusbar">
-        <span title={feedMessage ?? undefined}><i className={feedStatus === "market" ? "status-dot is-live" : "status-dot"} /> {feedStatus === "market" ? "Market data connected" : feedStatus === "demo" ? "Demo fallback active" : feedStatus === "loading" ? "Connecting market data" : "Feed paused"}</span>
+        <span><i className={live ? "status-dot is-live" : "status-dot"} /> Demo feed {live ? "connected" : "paused"}</span>
         <span>{instrument.assetClass} · {timeframe} · {mode}</span>
         <span>Paper trading only</span>
         <a href="https://www.tradingview.com/" target="_blank" rel="noreferrer">Charts by TradingView Lightweight Charts™</a>
-        <time>{lastUpdated ? `Updated ${new Date(lastUpdated).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}` : `${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ET`}</time>
+        <time>{new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} ET</time>
       </footer>
 
       <div className="toast-stack" aria-live="polite">
