@@ -26,6 +26,20 @@ npm.cmd run dev
 
 Open [http://localhost:5173](http://localhost:5173).
 
+## Enable market data on Vercel
+
+The terminal uses a Vercel Function at `/api/market` to keep the provider credential out of browser code. Without a configured credential, it automatically shows the clearly labeled simulated fallback.
+
+1. Create a Twelve Data account and copy an API key.
+2. Open the CrossPH Markets project in Vercel.
+3. Go to **Settings → Environment Variables**.
+4. Add `TWELVE_DATA_API_KEY` for Production and Preview. Do not add a `VITE_` prefix.
+5. Redeploy the latest `main` deployment.
+
+The live adapter loads provider OHLCV history and refreshes the active chart every minute. Twelve Data limits and display/redistribution rights depend on the selected plan. Confirm that the plan permits public external display before using the feed for public users.
+
+For local Function testing, copy `.env.example` to `.env.local`, add the private value, and use Vercel’s local development command. Never commit `.env.local`.
+
 Production verification:
 
 ```powershell
@@ -65,7 +79,7 @@ The market-data hook and paper engine are isolated from the interface. A later b
 
 ## Important limitations
 
-- All quotes, candles, volumes, headlines, alerts, and orders are demonstration data.
+- When the provider is configured, chart OHLCV values come from Twelve Data; otherwise values are demonstration data.
 - The application does not place real trades or provide financial advice.
 - Browser storage is local to one device and is not an account database.
 - Production market data and brokerage features require licensed providers, authentication, server-side validation, audit logging, security review, and applicable regulatory/legal work.
@@ -75,4 +89,3 @@ The market-data hook and paper engine are isolated from the interface. A later b
 Financial rendering uses [TradingView Lightweight Charts](https://github.com/tradingview/lightweight-charts), version 5.2.0, under the Apache License 2.0. The required product attribution is visible in the terminal footer and chart. See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
 This project does not contain TradingView’s proprietary Advanced Charts/Charting Library source and does not copy TradingView website code, text, branding, or protected visual assets.
-
